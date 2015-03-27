@@ -1,6 +1,7 @@
 /**
  * An OntologyRecord is an instance of a 
  */
+package db;
 
 @Grapes([
   @Grab(group='commons-io', module='commons-io', version='2.4'),

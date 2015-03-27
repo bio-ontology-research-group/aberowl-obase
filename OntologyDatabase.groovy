@@ -4,6 +4,8 @@
  * For now it is a mock and doesn't really save anything. That's okay.
  *
  */
+package db;
+
 import groovy.json.*
 import redis.clients.jedis.*
 
