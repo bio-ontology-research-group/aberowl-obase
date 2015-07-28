@@ -34,25 +34,28 @@ class OntologyRecord {
     def tempFile = new File('/tmp/'+fileName)
 
     // Get the checksum of the most recent release.
-    def currentFile = new FileInputStream(new File(BASE_ONTOLOGY_DIRECTORY+submissions[lastSubDate]))
-    def oldSum = md5Hex(currentFile)
-    currentFile.close()
+    def oldSum = ''
+    if(submissions.size() > 0) {
+      def currentFile = new FileInputStream(new File(BASE_ONTOLOGY_DIRECTORY+submissions.last()))
+      oldSum = md5Hex(currentFile)
+      currentFile.close()
+    }
 
-    http.get('uri': data.download, 'contentType': ContentType.BINARY, 'query': [ 'apikey': API_KEY ] ) { 
+/*    http.get('uri': data.download, 'contentType': ContentType.BINARY, 'query': [ 'apikey': API_KEY ] ) { 
       resp, ontology ->
         FileUtils.copyInputStreamToFile(ontology, tempFile)
         def newSum = md5Hex(new FileInputStream(tempFile))
 
         if(oldSum != newSum) {
-          FileUtils.moveFile(tempFile, oFile)
+          FileUtils.moveFile(tempFile, oFile)*/
           submissions.add([
             'time': data.released,
             'file': fileName
           ])
-        }
+        /*}
         oFile.close()
-        tempFile.close()
-    }
+        tempFile.close()*/
+    //}
   }
 
   Map asMap() {
