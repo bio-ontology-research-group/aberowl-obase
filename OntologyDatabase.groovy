@@ -62,9 +62,7 @@ class OntologyDatabase {
    * @param data An object with data about the ontology.
    */
   OntologyRecord createOntology(data) {
-    // Not really the right place for this
-    data.lastSubDate = 0
-    data.submissions = new LinkedHashMap()
+    data.submissions = new ArrayList()
 
     def oRecord = new OntologyRecord(data)
     db.set(DB_PREFIX + data.id, new JsonBuilder(oRecord.asMap()).toString())

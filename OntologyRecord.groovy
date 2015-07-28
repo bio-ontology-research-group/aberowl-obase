@@ -24,9 +24,8 @@ class OntologyRecord {
   String description
   String source
   String status
-  LinkedHashMap submissions
+  ArrayList submissions
   ArrayList owners
-  long lastSubDate
 
   void addNewSubmission(data) {
     def http = new HTTPBuilder()
@@ -46,8 +45,10 @@ class OntologyRecord {
 
         if(oldSum != newSum) {
           FileUtils.moveFile(tempFile, oFile)
-          lastSubDate = data.released
-          submissions[data.released] = fileName
+          submissions.add([
+            'time': data.released,
+            'file': fileName
+          ])
         }
         oFile.close()
         tempFile.close()
