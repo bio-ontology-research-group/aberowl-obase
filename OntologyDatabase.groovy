@@ -12,7 +12,7 @@ class OntologyDatabase {
   def db
   
   OntologyDatabase() {
-    db = new Jedis('localhost');
+    db = new JedisPool(new JedisPoolConfig(), "localhost");
   }
 
   /**
@@ -22,8 +22,10 @@ class OntologyDatabase {
    * @return The ontology, or null.
    */
   OntologyRecord getOntology(String id) {
+    def db = db.getResource()
     id = DB_PREFIX + id 
     def item = db.get(id)
+    db.destroy()
     if(item) {
       return new OntologyRecord(new JsonSlurper().parseText(item))
     } else {
@@ -37,10 +39,12 @@ class OntologyDatabase {
    * @return The ontology, or null.
    */
   OntologyRecord getOntology(String id, boolean noprefix) {
+    def db = db.getResource()
     if(noprefix != true) {
       id = DB_PREFIX + id 
     }
     def item = db.get(id)
+    db.destroy()
     if(item) {
       return new OntologyRecord(new JsonSlurper().parseText(item))
     } else {
@@ -49,10 +53,12 @@ class OntologyDatabase {
   }
 
   Set<String> allOntologies() {
+    def db = db.getResource()
     def onts = []
     db.keys('ontologies:*').each { id ->
       onts.add(getOntology(id, true))
     }
+    db.destroy()
     return onts
   }
 
@@ -63,11 +69,13 @@ class OntologyDatabase {
    */
   OntologyRecord createOntology(data) {
     // Not really the right place for this
+    def db = db.getResource()
     data.lastSubDate = 0
     data.submissions = new LinkedHashMap()
 
     def oRecord = new OntologyRecord(data)
     db.set(DB_PREFIX + data.id, new JsonBuilder(oRecord.asMap()).toString())
+    db.destroy()
 
     return oRecord
   }
@@ -79,6 +87,8 @@ class OntologyDatabase {
    * @param record The record to save.
    */
   void saveOntology(OntologyRecord record) {
+    def db = db.getResource()
     db.set(DB_PREFIX + record.id, new JsonBuilder(record.asMap()).toString())
+    db.destroy()
   }
 }
