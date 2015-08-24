@@ -25,7 +25,6 @@ class OntologyDatabase {
     def db = db.getResource()
     id = DB_PREFIX + id 
     def item = db.get(id)
-    db.destroy()
     if(item) {
       return new OntologyRecord(new JsonSlurper().parseText(item))
     } else {
@@ -44,7 +43,6 @@ class OntologyDatabase {
       id = DB_PREFIX + id 
     }
     def item = db.get(id)
-    db.destroy()
     if(item) {
       return new OntologyRecord(new JsonSlurper().parseText(item))
     } else {
@@ -58,7 +56,6 @@ class OntologyDatabase {
     db.keys('ontologies:*').each { id ->
       onts.add(getOntology(id, true))
     }
-    db.destroy()
     return onts
   }
 
@@ -75,7 +72,6 @@ class OntologyDatabase {
 
     def oRecord = new OntologyRecord(data)
     db.set(DB_PREFIX + data.id, new JsonBuilder(oRecord.asMap()).toString())
-    db.destroy()
 
     return oRecord
   }
@@ -89,6 +85,5 @@ class OntologyDatabase {
   void saveOntology(OntologyRecord record) {
     def db = db.getResource()
     db.set(DB_PREFIX + record.id, new JsonBuilder(record.asMap()).toString())
-    db.destroy()
   }
 }
