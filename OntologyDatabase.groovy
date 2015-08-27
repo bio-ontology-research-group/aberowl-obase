@@ -25,6 +25,7 @@ class OntologyDatabase {
     def db = db.getResource()
     id = DB_PREFIX + id 
     def item = db.get(id)
+    db.close()
     if(item) {
       return new OntologyRecord(new JsonSlurper().parseText(item))
     } else {
@@ -36,25 +37,16 @@ class OntologyDatabase {
    * Return an ontology ID by name.
    *
    * @param id The id of the record to return.
+   * @param db A jedis resource. This is here to mitigate the problems with retrieving a lot of records in a short amount of time. Disgusting, I know. TODO: fix.
    * @return The ontology, or null.
    */
   OntologyRecord getOntology(String id, boolean noprefix) {
     def db = db.getResource()
-    return getOntology(id, noprefix, db)
-  }
-
-  /**
-   * Return an ontology ID by name.
-   *
-   * @param id The id of the record to return.
-   * @param db A jedis resource. This is here to mitigate the problems with retrieving a lot of records in a short amount of time. Disgusting, I know. TODO: fix.
-   * @return The ontology, or null.
-   */
-  OntologyRecord getOntology(String id, boolean noprefix, db) {
     if(noprefix != true) {
       id = DB_PREFIX + id 
     }
     def item = db.get(id)
+    db.close()
     if(item) {
       return new OntologyRecord(new JsonSlurper().parseText(item))
     } else {
@@ -66,8 +58,9 @@ class OntologyDatabase {
     def db = db.getResource()
     def onts = []
     db.keys('ontologies:*').each { id ->
-      onts.add(getOntology(id, true, db))
+      onts.add(getOntology(id, true))
     }
+    db.close()
     return onts
   }
 
@@ -84,6 +77,7 @@ class OntologyDatabase {
 
     def oRecord = new OntologyRecord(data)
     db.set(DB_PREFIX + data.id, new JsonBuilder(oRecord.asMap()).toString())
+    db.close()
 
     return oRecord
   }
