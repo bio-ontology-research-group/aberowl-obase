@@ -31,6 +31,7 @@ class OntologyDatabase {
       return null
     }
   }
+
   /**
    * Return an ontology ID by name.
    *
@@ -39,6 +40,17 @@ class OntologyDatabase {
    */
   OntologyRecord getOntology(String id, boolean noprefix) {
     def db = db.getResource()
+    return getOntology(id, noprefix, db)
+  }
+
+  /**
+   * Return an ontology ID by name.
+   *
+   * @param id The id of the record to return.
+   * @param db A jedis resource. This is here to mitigate the problems with retrieving a lot of records in a short amount of time. Disgusting, I know. TODO: fix.
+   * @return The ontology, or null.
+   */
+  OntologyRecord getOntology(String id, boolean noprefix, db) {
     if(noprefix != true) {
       id = DB_PREFIX + id 
     }
@@ -54,7 +66,7 @@ class OntologyDatabase {
     def db = db.getResource()
     def onts = []
     db.keys('ontologies:*').each { id ->
-      onts.add(getOntology(id, true))
+      onts.add(getOntology(id, true, db))
     }
     return onts
   }
