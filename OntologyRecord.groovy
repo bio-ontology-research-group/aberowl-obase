@@ -25,6 +25,7 @@ class OntologyRecord {
   String homepage
   String source
   String status
+  String purl
   LinkedHashMap submissions
   ArrayList owners
   ArrayList species 
