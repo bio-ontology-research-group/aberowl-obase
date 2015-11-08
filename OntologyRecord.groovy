@@ -22,7 +22,7 @@ class OntologyRecord {
   String id
   String name
   String description
-  String authors
+  String author
   String source
   String status
   LinkedHashMap submissions
