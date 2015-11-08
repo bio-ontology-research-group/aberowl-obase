@@ -26,6 +26,7 @@ class OntologyRecord {
   String source
   String status
   String purl
+  String ncbi_id
   LinkedHashMap submissions
   ArrayList owners
   ArrayList species 
