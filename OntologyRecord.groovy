@@ -22,10 +22,13 @@ class OntologyRecord {
   String id
   String name
   String description
+  String authors
   String source
   String status
   LinkedHashMap submissions
   ArrayList owners
+  ArrayList species 
+  ArrayList topics
   long lastSubDate
 
   void addNewSubmission(data) {
