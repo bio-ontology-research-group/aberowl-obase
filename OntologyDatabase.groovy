@@ -91,5 +91,6 @@ class OntologyDatabase {
   void saveOntology(OntologyRecord record) {
     def db = db.getResource()
     db.set(DB_PREFIX + record.id, new JsonBuilder(record.asMap()).toString())
+    db.close()
   }
 }
