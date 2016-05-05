@@ -15,6 +15,7 @@ import groovyx.net.http.ContentType
 import org.apache.commons.io.FileUtils
 import org.apache.commons.codec.digest.DigestUtils
 import java.nio.file.*
+import java.io.File
 
 class OntologyRecord {
   public final static String BASE_ONTOLOGY_DIRECTORY = 'onts/'
@@ -47,27 +48,28 @@ class OntologyRecord {
     def oldSum = 0
     try {
       def currentFile = new FileInputStream(new File(BASE_ONTOLOGY_DIRECTORY+submissions[lastSubDate]))
-      oldSum = DigestUtils.md5Hex(currentFile)
+      if(currentFile) {
+        oldSum = DigestUtils.md5Hex(currentFile)
+      }
       currentFile.close()
     } catch (Exception E) {
-
+      E.printStackTrace()
     }
 
     println "Downloading from "+data.download
-    http.get('uri': data.download, 'contentType': ContentType.BINARY, 'query': [ 'apikey': API_KEY ] ) { 
-      resp, ontology ->
-        FileUtils.copyInputStreamToFile(ontology, tempFile)
-        def newSum = DigestUtils.md5Hex(new FileInputStream(tempFile))
-
-        if(oldSum != newSum) {
-	  //FileUtils.moveFile(tempFile, oFile)
-	  /* pretty dangerous: */
-	  Files.move(tempFile.toPath(),oFile.toPath(),StandardCopyOption.REPLACE_EXISTING)
-          lastSubDate = data.released
-          submissions[data.released] = fileName
-        }
-	//	oFile.close()
-	//        tempFile.close()
+    http.get('uri': data.download, 'contentType': ContentType.BINARY, 'query': [ 'apikey': API_KEY ] ) { resp, ontology ->
+      FileUtils.copyInputStreamToFile(ontology, tempFile)
+      def newSum = DigestUtils.md5Hex(new FileInputStream(tempFile))
+      
+      if(oldSum != newSum) {
+	//FileUtils.moveFile(tempFile, oFile)
+	/* pretty dangerous: */
+	Files.move(tempFile.toPath(),oFile.toPath(),StandardCopyOption.REPLACE_EXISTING)
+	lastSubDate = data.released
+	submissions[data.released] = fileName
+      }
+      oFile.close()
+      tempFile.close()
     }
   }
 
