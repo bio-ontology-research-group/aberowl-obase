@@ -60,7 +60,8 @@ class OntologyRecord {
     //    http.get('uri': data.download, 'contentType': ContentType.BINARY, 'query': [ 'apikey': API_KEY ] ) { resp, ontology ->
 
     //    FileUtils.copyURLToFile(new URL(data.download+"?apikey="+API_KEY), tempFile)
-    def proc = ("curl -L "+data.download+"?apikey="+API_KEY + " -o "+tempFile.getPath()).execute()
+    def urlForCmd = data.download.toString().replaceAll("\"","")
+    def proc = ("curl -L "+urlForCmd+"?apikey="+API_KEY + " -o "+tempFile.getPath()).execute()
     proc.waitFor()
 
     //      FileUtils.copyInputStreamToFile(ontology, tempFile)
