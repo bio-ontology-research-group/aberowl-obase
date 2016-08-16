@@ -67,6 +67,8 @@ class OntologyRecord {
     
     /* Try to unzip the file */
     try {
+      println "Attempting to unzip file..."
+      byte[] buffer = new byte[1024]
       GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(tempFile))
       def tf = File.createTempFile("aber-gz", ".tmp")
       FileOutputStream out = new FileOutputStream(tf)
@@ -80,7 +82,7 @@ class OntologyRecord {
       Files.move(tf.toPath(),tempFile.toPath(),StandardCopyOption.REPLACE_EXISTING)
       tempFile = new File('/tmp/'+fileName)
     } catch (Exception E) {
-      
+      println "Not a Gzip file: " + E.getMessage()
     }
 
 
