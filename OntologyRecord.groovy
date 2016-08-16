@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.codec.digest.DigestUtils
 import java.nio.file.*
 import java.io.File
+import java.util.zip.GZIPInputStream
 
 class OntologyRecord {
   public final static String BASE_ONTOLOGY_DIRECTORY = 'onts/'
@@ -63,6 +64,25 @@ class OntologyRecord {
     def urlForCmd = data.download.toString().replaceAll("\"","")
     def proc = ("curl -L "+urlForCmd+"?apikey="+API_KEY + " -o "+tempFile.getPath()).execute()
     proc.waitFor()
+    
+    /* Try to unzip the file */
+    try {
+      GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(tempFile))
+      def tf = File.createTempFile("aber-gz", ".tmp")
+      FileOutputStream out = new FileOutputStream(tf)
+      int len = 0
+      while ((len = gzis.read(buffer)) > 0) {
+        out.write(buffer, 0, len)
+      }
+
+      gzis.close()
+      out.close()
+      Files.move(tf.toPath(),tempFile.toPath(),StandardCopyOption.REPLACE_EXISTING)
+      tempFile = new File('/tmp/'+fileName)
+    } catch (Exception E) {
+      
+    }
+
 
     //      FileUtils.copyInputStreamToFile(ontology, tempFile)
       def newSum = DigestUtils.md5Hex(new FileInputStream(tempFile))
